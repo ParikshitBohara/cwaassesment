@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 };
 
 // === Your details (edit) ===
-const STUDENT_NO = "Your-Student-No";
-const STUDENT_NAME = "Your Name";
+const STUDENT_NO = "21885934";
+const STUDENT_NAME = "Parikshit Bohara";
 
 export default function RootLayout({
   children,
