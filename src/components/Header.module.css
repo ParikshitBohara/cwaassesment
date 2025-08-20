@@ -1,0 +1,332 @@
+/* Modern Header Styles */
+.header {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.headerDark {
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.headerLight {
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.topBar {
+  padding: 1rem 1.5rem;
+}
+
+.topBarContent {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.topBarContentDark {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navContainer {
+  padding: 0 1.5rem 1rem;
+}
+
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.navBarDark {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navLinks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.navLink {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.navLink:hover::before {
+  left: 100%;
+}
+
+.navLinkActive {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.navLinkInactive {
+  color: inherit;
+}
+
+.navLinkInactive:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.navLinkInactiveDark:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.aboutLink {
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.aboutLink::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.aboutLink:hover::after {
+  width: 100%;
+}
+
+/* Modern Hamburger Menu */
+.hamburgerButton {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.hamburgerButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.hamburgerButtonDark:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hamburgerButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.hamburgerIcon {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.hamburgerLine {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hamburgerLine:nth-child(1) {
+  top: 4px;
+  transform-origin: center;
+}
+
+.hamburgerLine:nth-child(2) {
+  top: 9px;
+  opacity: 1;
+}
+
+.hamburgerLine:nth-child(3) {
+  top: 14px;
+  transform-origin: center;
+}
+
+/* Hamburger Animation */
+.hamburgerButton[aria-expanded="true"] .hamburgerLine:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburgerButton[aria-expanded="true"] .hamburgerLine:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.hamburgerButton[aria-expanded="true"] .hamburgerLine:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Modern Dropdown Menu */
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  padding: 0.5rem;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  animation: dropdownEnter 0.2s ease forwards;
+  z-index: 1000;
+}
+
+.dropdownMenuDark {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes dropdownEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateX(4px);
+}
+
+.dropdownItemDark:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dropdownItem:focus {
+  outline: none;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0.5rem 0;
+  border-radius: 1px;
+}
+
+.dropdownDividerDark {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Mode Toggle */
+.darkModeToggle {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.toggleLabel:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.toggleLabelDark:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toggleCheckbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .topBar {
+    padding: 0.75rem 1rem;
+  }
+  
+  .navContainer {
+    padding: 0 1rem 0.75rem;
+  }
+  
+  .navLinks {
+    gap: 0.25rem;
+  }
+  
+  .navLink {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+} 
