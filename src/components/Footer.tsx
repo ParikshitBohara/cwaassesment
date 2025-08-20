@@ -6,8 +6,12 @@ type Props = {
 
 export default function Footer({ name, studentNo, date = "18/08/2025" }: Props) {
   return (
-    <footer className="mt-auto py-4 text-center text-sm text-neutral-600 dark:text-neutral-300">
-      © 2025 {name}, {studentNo}, {date}
+    <footer className="mt-auto py-6 text-center text-sm text-theme-secondary bg-theme-primary border-t border-theme-primary backdrop-blur-sm">
+      <div className="container mx-auto px-6">
+        <div className="">
+          © 2025 {name}, {studentNo}, {date}
+        </div>
+      </div>
     </footer>
   );
 }

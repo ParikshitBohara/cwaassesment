@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useTheme } from "@/contexts/ThemeContext";
+import styles from "./Header.module.css";
 
 type Props = {
   studentNo: string;
@@ -10,15 +12,50 @@ type Props = {
 };
 
 export default function Header({ studentNo, title = "Title" }: Props) {
-  const [dark, setDark] = useState(true);
+  const { theme, toggleTheme } = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // Close on route change
+  useEffect(() => setMenuOpen(false), [pathname]);
+
+  // Close on ESC / click outside
   useEffect(() => {
-    const root = document.documentElement;
-    dark ? root.classList.add("dark") : root.classList.remove("dark");
-  }, [dark]);
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        buttonRef.current?.focus();
+      }
+      // Simple arrow navigation inside the menu
+      if (!menuOpen || !menuRef.current) return;
+      const items = menuRef.current.querySelectorAll<HTMLAnchorElement>('a[role="menuitem"]');
+      if (!items.length) return;
+      const i = Array.from(items).indexOf(document.activeElement as HTMLAnchorElement);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        (items[(i + 1 + items.length) % items.length] || items[0]).focus();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        (items[(i - 1 + items.length) % items.length] || items[items.length - 1]).focus();
+      }
+    }
+    function onClick(e: MouseEvent) {
+      if (!menuOpen) return;
+      const t = e.target as Node;
+      if (!menuRef.current?.contains(t) && !buttonRef.current?.contains(t)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [menuOpen]);
 
-  // Left-side nav (exclude About here)
   const NAV_LEFT = [
     { href: "/", label: "Tabs" },
     { href: "/escape-room", label: "Escape Room" },
@@ -26,41 +63,37 @@ export default function Header({ studentNo, title = "Title" }: Props) {
     { href: "/court-room", label: "Court Room" },
   ];
 
+  // Default to dark theme if theme is not yet initialized
+  const isDark = theme === 'dark';
+
   return (
-    <header className="sticky top-0 z-50 bg-neutral-100/80 backdrop-blur dark:bg-neutral-900/80">
-      {/* ===== Top bar: Student No. left, Title center ===== */}
-      <div className="px-6 py-3 md:px-8 lg:px-12">
-        <div className="rounded border border-neutral-300 bg-white/70 px-4 py-2 dark:border-neutral-700 dark:bg-neutral-800/70">
+    <header className={`${styles.header} ${isDark ? styles.headerDark : styles.headerLight} sticky top-0 z-50`}>
+      {/* Top bar */}
+      <div className={styles.topBar}>
+        <div className={`${styles.topBarContent} ${isDark ? styles.topBarContentDark : ''}`}>
           <div className="grid grid-cols-3 items-center">
-            {/* Student number left */}
             <div className="text-sm font-semibold">{studentNo}</div>
-
-            {/* Title center */}
             <h1 className="text-center text-lg font-semibold">{title}</h1>
-
-            {/* Right side left blank so About/Hamburger are below */}
             <div />
           </div>
         </div>
       </div>
 
-      {/* ===== Nav row: left links, right About + hamburger ===== */}
-      <div className="px-6 md:px-8 lg:px-12">
-        <div className="flex items-center justify-between border-b border-neutral-300 pb-2 dark:border-neutral-700">
-          {/* Left group */}
-          <nav aria-label="Primary" className="text-sm flex flex-wrap items-center gap-2">
+      {/* Nav row */}
+      <div className={styles.navContainer}>
+        <div className={`${styles.navBar} ${isDark ? styles.navBarDark : ''}`}>
+          <nav aria-label="Primary" className={styles.navLinks}>
             {NAV_LEFT.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={[
-                    "rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                    isActive
-                      ? "border border-neutral-400 bg-neutral-200 dark:border-neutral-600 dark:bg-neutral-700"
-                      : "hover:bg-neutral-200/60 dark:hover:bg-neutral-700/60",
-                  ].join(" ")}
+                  className={`${styles.navLink} ${
+                    isActive 
+                      ? styles.navLinkActive 
+                      : `${styles.navLinkInactive} ${isDark ? styles.navLinkInactiveDark : ''}`
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -68,29 +101,102 @@ export default function Header({ studentNo, title = "Title" }: Props) {
             })}
           </nav>
 
-          {/* Right group: About + hamburger */}
-          <div className="flex items-center gap-4">
-            <Link href="/about" className="text-sm underline-offset-4 hover:underline">
+          {/* Right group: About + hamburger menu */}
+          <div className={styles.rightGroup}>
+            <Link href="/about" className={styles.aboutLink}>
               About
             </Link>
-            <button aria-label="Open menu" className="group relative h-6 w-8">
-              <span className="absolute left-0 top-1 block h-0.5 w-8 bg-current transition-transform group-hover:translate-x-0.5" />
-              <span className="absolute left-0 top-1/2 block h-0.5 w-8 -translate-y-1/2 bg-current" />
-              <span className="absolute bottom-1 left-0 block h-0.5 w-8 bg-current transition-transform group-hover:-translate-x-0.5" />
+
+            <button
+              ref={buttonRef}
+              type="button"
+              className={`${styles.hamburgerButton} ${isDark ? styles.hamburgerButtonDark : ''}`}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-controls="desktop-menu"
+              onClick={() => setMenuOpen((v) => !v)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  setMenuOpen(true);
+                  setTimeout(() => {
+                    menuRef.current
+                      ?.querySelector<HTMLAnchorElement>('a[role="menuitem"]')
+                      ?.focus();
+                  }, 0);
+                }
+              }}
+            >
+              <div className={styles.hamburgerIcon}>
+                <span className={styles.hamburgerLine} />
+                <span className={styles.hamburgerLine} />
+                <span className={styles.hamburgerLine} />
+              </div>
             </button>
+
+            {/* Modern Dropdown Menu */}
+            {menuOpen && (
+              <div
+                id="desktop-menu"
+                ref={menuRef}
+                role="menu"
+                aria-label="More"
+                className={`${styles.dropdownMenu} ${isDark ? styles.dropdownMenuDark : ''}`}
+              >
+                <Link
+                  role="menuitem"
+                  href="/"
+                  className={`${styles.dropdownItem} ${isDark ? styles.dropdownItemDark : ''}`}
+                >
+                  Tabs (Home)
+                </Link>
+                <Link
+                  role="menuitem"
+                  href="/escape-room"
+                  className={`${styles.dropdownItem} ${isDark ? styles.dropdownItemDark : ''}`}
+                >
+                  Escape Room
+                </Link>
+                <Link
+                  role="menuitem"
+                  href="/coding-races"
+                  className={`${styles.dropdownItem} ${isDark ? styles.dropdownItemDark : ''}`}
+                >
+                  Coding Races
+                </Link>
+                <Link
+                  role="menuitem"
+                  href="/court-room"
+                  className={`${styles.dropdownItem} ${isDark ? styles.dropdownItemDark : ''}`}
+                >
+                  Court Room
+                </Link>
+                <div className={`${styles.dropdownDivider} ${isDark ? styles.dropdownDividerDark : ''}`} />
+                <button
+                  role="menuitem"
+                  type="button"
+                  onClick={toggleTheme}
+                  className={`${styles.dropdownItem} ${isDark ? styles.dropdownItemDark : ''}`}
+                  aria-pressed={isDark}
+                >
+                  {isDark ? "🌙 Dark mode: ON" : "☀️ Dark mode: OFF"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* ===== Dark mode row: separate and right-aligned ===== */}
-        <div className="mt-2 mb-2 flex justify-end">
-          <label className="flex items-center gap-2 text-sm">
+        {/* Dark mode toggle */}
+        <div className={styles.darkModeToggle}>
+          <label className={`${styles.toggleLabel} ${isDark ? styles.toggleLabelDark : ''}`}>
             <input
               type="checkbox"
-              checked={dark}
-              onChange={() => setDark((v) => !v)}
-              className="h-4 w-4 accent-current"
+              checked={isDark}
+              onChange={toggleTheme}
+              className={styles.toggleCheckbox}
             />
-            Dark Mode
+            {isDark ? "🌙" : "☀️"} Dark Mode
           </label>
         </div>
       </div>
