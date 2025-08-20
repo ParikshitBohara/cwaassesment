@@ -1,0 +1,146 @@
+warning: in the working copy of 'src/app/about/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/coding-races/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/court-room/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/escape-room/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/globals.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/layout.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Footer.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Header.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/contexts/ThemeContext.tsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/about/page.tsx b/src/about/page.tsx[m
+[1mdeleted file mode 100644[m
+[1mindex 87b6640..0000000[m
+[1m--- a/src/about/page.tsx[m
+[1m+++ /dev/null[m
+[36m@@ -1,33 +0,0 @@[m
+[31m-export default function AboutPage() {[m
+[31m-  return ([m
+[31m-    <main className="mx-auto max-w-3xl px-6 py-10 space-y-6">[m
+[31m-      <h1 className="text-3xl font-bold">About</h1>[m
+[31m-      <p className="text-sm text-neutral-500 dark:text-neutral-400">[m
+[31m-        Subject: CSE3CWA / CSE5006[m
+[31m-      </p>[m
+[31m-[m
+[31m-      <section>[m
+[31m-        <h2 className="text-xl font-semibold">Student Details</h2>[m
+[31m-        <ul className="list-disc pl-6 mt-2">[m
+[31m-          <li><strong>Name:</strong> YOUR NAME</li>[m
+[31m-          <li><strong>Student Number:</strong> YOUR-STUDENT-NUMBER</li>[m
+[31m-        </ul>[m
+[31m-      </section>[m
+[31m-[m
+[31m-      <section>[m
+[31m-        <h2 className="text-xl font-semibold">How to use this website</h2>[m
+[31m-        <p className="mt-2">[m
+[31m-          This site generates copy-pasteable HTML5 + JS (with inline CSS) that can be used in Moodle.[m
+[31m-        </p>[m
+[31m-        <div className="aspect-video w-full mt-4 border rounded">[m
+[31m-          <iframe[m
+[31m-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"[m
+[31m-            title="Demo video"[m
+[31m-            className="w-full h-full"[m
+[31m-            allowFullScreen[m
+[31m-          />[m
+[31m-        </div>[m
+[31m-      </section>[m
+[31m-    </main>[m
+[31m-  );[m
+[31m-}[m
+[1mdiff --git a/src/app/globals.css b/src/app/globals.css[m
+[1mindex f52dc4f..076f01d 100644[m
+[1m--- a/src/app/globals.css[m
+[1m+++ b/src/app/globals.css[m
+[36m@@ -67,6 +67,23 @@[m
+   --foreground: var(--text-primary);[m
+ }[m
+ [m
+[32m+[m[32m/* Tailwind Theme Integration */[m
+[32m+[m[32m@theme inline {[m
+[32m+[m[32m  --color-background: var(--background-primary);[m
+[32m+[m[32m  --color-foreground: var(--text-primary);[m
+[32m+[m[32m  --color-background-secondary: var(--background-secondary);[m
+[32m+[m[32m  --color-background-tertiary: var(--background-tertiary);[m
+[32m+[m[32m  --color-text-primary: var(--text-primary);[m
+[32m+[m[32m  --color-text-secondary: var(--text-secondary);[m
+[32m+[m[32m  --color-text-tertiary: var(--text-tertiary);[m
+[32m+[m[32m  --color-border-primary: var(--border-primary);[m
+[32m+[m[32m  --color-border-secondary: var(--border-secondary);[m
+[32m+[m[32m  --color-accent-primary: var(--accent-primary);[m
+[32m+[m[32m  --color-accent-secondary: var(--accent-secondary);[m
+[32m+[m[32m  --font-sans: var(--font-geist-sans);[m
+[32m+[m[32m  --font-mono: var(--font-geist-mono);[m
+[32m+[m[32m}[m
+[32m+[m
+ /* Base Styles */[m
+ * {[m
+   box-sizing: border-box;[m
+[1mdiff --git a/src/coding-races/page.tsx b/src/coding-races/page.tsx[m
+[1mdeleted file mode 100644[m
+[1mindex f729abd..0000000[m
+[1m--- a/src/coding-races/page.tsx[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-export default function CodingRacesPage() {[m
+[31m-  return ([m
+[31m-    <main className="flex min-h-screen items-center justify-center">[m
+[31m-      <h1 className="text-2xl font-bold">(Coming Soon)</h1>[m
+[31m-    </main>[m
+[31m-  );[m
+[31m-}[m
+[1mdiff --git a/src/components/Footer.tsx b/src/components/Footer.tsx[m
+[1mindex 1f4bba3..541f3a3 100644[m
+[1m--- a/src/components/Footer.tsx[m
+[1m+++ b/src/components/Footer.tsx[m
+[36m@@ -6,11 +6,9 @@[m [mtype Props = {[m
+ [m
+ export default function Footer({ name, studentNo, date = "18/08/2025" }: Props) {[m
+   return ([m
+[31m-    <footer className="mt-auto py-6 text-center text-sm text-theme-secondary bg-theme-primary border-t border-theme-primary backdrop-blur-sm">[m
+[32m+[m[32m    <footer className="mt-auto py-6 text-center text-sm text-theme-secondary bg-theme-primary border-t border-theme-primary">[m
+       <div className="container mx-auto px-6">[m
+[31m-        <div className="rounded-lg border border-theme-primary bg-theme-elevated px-4 py-3 backdrop-blur-sm">[m
+[31m-          © 2025 {name}, {studentNo}, {date}[m
+[31m-        </div>[m
+[32m+[m[32m        © 2025 {name}, {studentNo}, {date}[m
+       </div>[m
+     </footer>[m
+   );[m
+[1mdiff --git a/src/components/Header.tsx b/src/components/Header.tsx[m
+[1mindex e51ba7c..5271f78 100644[m
+[1m--- a/src/components/Header.tsx[m
+[1m+++ b/src/components/Header.tsx[m
+[36m@@ -202,4 +202,4 @@[m [mexport default function Header({ studentNo, title = "Title" }: Props) {[m
+       </div>[m
+     </header>[m
+   );[m
+[31m-} [m
+\ No newline at end of file[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/court-room/page.tsx b/src/court-room/page.tsx[m
+[1mdeleted file mode 100644[m
+[1mindex 0450fdc..0000000[m
+[1m--- a/src/court-room/page.tsx[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-export default function CourtRoomPage() {[m
+[31m-  return ([m
+[31m-    <main className="flex min-h-screen items-center justify-center">[m
+[31m-      <h1 className="text-2xl font-bold">(Coming Soon)</h1>[m
+[31m-    </main>[m
+[31m-  );[m
+[31m-}[m
+[1mdiff --git a/src/escape-room/page.tsx b/src/escape-room/page.tsx[m
+[1mdeleted file mode 100644[m
+[1mindex 98718da..0000000[m
+[1m--- a/src/escape-room/page.tsx[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-export default function EscapeRoomPage() {[m
+[31m-  return ([m
+[31m-    <main className="flex min-h-screen items-center justify-center">[m
+[31m-      <h1 className="text-2xl font-bold">(Coming Soon)</h1>[m
+[31m-    </main>[m
+[31m-  );[m
+[31m-}[m
+\ No newline at end of file[m

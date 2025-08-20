@@ -202,4 +202,4 @@ export default function Header({ studentNo, title = "Title" }: Props) {
       </div>
     </header>
   );
-} 
+}
