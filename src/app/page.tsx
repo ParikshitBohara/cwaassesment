@@ -272,7 +272,6 @@ export default function HomePage() {
               Copy Output
             </button>
 
-            {/* Inline "Copied!" notice */}
             <span
               id="copy-status"
               role="status"
