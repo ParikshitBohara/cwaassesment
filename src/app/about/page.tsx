@@ -10,7 +10,7 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold text-theme-primary mb-4">Student Details</h2>
         <ul className="list-disc pl-6 space-y-2 text-theme-secondary">
           <li><strong className="text-theme-primary">Name:</strong> Parikshit Bohara</li>
-          <li><strong className="text-theme-primary">Student Number:</strong> 21885934</li>
+          <li><strong className="text-theme-primary">Student Number:</strong> 21880927</li>
         </ul>
       </section>
 

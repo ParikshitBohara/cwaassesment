@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: "Next.js app for LMS code generation",
 };
 
-const STUDENT_NO = "21885934";
+const STUDENT_NO = "21880927";
 const STUDENT_NAME = "Parikshit Bohara";
 
 export default function RootLayout({

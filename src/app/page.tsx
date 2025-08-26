@@ -11,6 +11,7 @@ const START_TABS: TabDef[] = [
 ];
 
 const STORAGE_KEY = "tabs_builder_state_v1";
+const ACTIVE_KEY  = STORAGE_KEY + "_active";
 
 function escapeHTML(s: string) {
   return s.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]!));
@@ -23,7 +24,6 @@ function renderUserContent(raw: string) {
     ? v
     : `<p style="margin:0;white-space:pre-wrap;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;">${escapeHTML(v)}</p>`;
 }
-
 function generateInlineTabsHTML(tabs: TabDef[]) {
   const html = `<!doctype html>
 <html lang="en"><head>
@@ -105,35 +105,44 @@ ${tabs.map((t, i) => `
 }
 
 export default function HomePage() {
-  const [tabs, setTabs] = useState<TabDef[]>(START_TABS);
-  const [active, setActive] = useState(0);
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
+  const [tabs, setTabs] = useState<TabDef[]>(() => {
+    if (typeof window === "undefined") return START_TABS;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.every(t => t && typeof t.id === "string")) {
-          const loaded = parsed as TabDef[];
-          setTabs(loaded);
-          const maxNum =
-            loaded
-              .map(t => /^t(\d+)$/.exec(t.id)?.[1])
-              .filter(Boolean)
-              .map(n => parseInt(n as string, 10))
-              .reduce((a, b) => Math.max(a, b), START_TABS.length) || START_TABS.length;
-          idCounter.current = Math.max(idCounter.current, maxNum + 1);
-        }
-      }
-    } catch {}
-  }, []);
+      return raw ? (JSON.parse(raw) as TabDef[]) : START_TABS;
+    } catch {
+      return START_TABS;
+    }
+  });
+
+  const [active, setActive] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    const n = Number(localStorage.getItem(ACTIVE_KEY));
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  });
+
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs)); } catch {}
   }, [tabs]);
+  useEffect(() => {
+    try { localStorage.setItem(ACTIVE_KEY, String(active)); } catch {}
+  }, [active]);
 
   const idCounter = useRef(START_TABS.length + 1);
+  useEffect(() => {
+    const maxNum =
+      tabs
+        .map(t => /^t(\d+)$/.exec(t.id)?.[1])
+        .filter(Boolean)
+        .map(n => parseInt(n as string, 10))
+        .reduce((a, b) => Math.max(a, b), START_TABS.length) || START_TABS.length;
+    idCounter.current = Math.max(idCounter.current, maxNum + 1);
+
+    if (active >= tabs.length) setActive(Math.max(0, tabs.length - 1));
+  }, []);
+
   const nextId = (existing: TabDef[]) => {
     const used = new Set(existing.map(t => t.id));
     let candidate = `t${idCounter.current}`;
@@ -149,10 +158,17 @@ export default function HomePage() {
 
   const addTab = () =>
     setTabs((prev) => [...prev, { id: nextId(prev), label: `Tab ${prev.length + 1}`, content: "" }]);
+
   const removeTab = (i: number) =>
-    setTabs((prev) => prev.filter((_, idx) => idx !== i));
+    setTabs((prev) => {
+      const next = prev.filter((_, idx) => idx !== i);
+      if (active >= i) setActive(Math.max(0, active - 1));
+      return next;
+    });
+
   const updateLabel = (i: number, v: string) =>
     setTabs((prev) => prev.map((t, idx) => (idx === i ? { ...t, label: v } : t)));
+
   const updateContent = (i: number, v: string) =>
     setTabs((prev) => prev.map((t, idx) => (idx === i ? { ...t, content: v } : t)));
 
@@ -185,9 +201,7 @@ export default function HomePage() {
                 role="button"
                 tabIndex={0}
                 onClick={() => setActive(i)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setActive(i);
-                }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setActive(i); }}
                 className={`inline-flex items-center justify-between w-full rounded-lg px-3 py-2 transition-colors duration-200 ${
                   i === active
                     ? "border border-theme-accent bg-theme-accent text-theme-primary font-medium shadow-sm"
@@ -205,10 +219,7 @@ export default function HomePage() {
                     type="button"
                     title="Remove tab"
                     aria-label={`Remove tab ${i + 1}`}
-                    onClick={() => {
-                      removeTab(i);
-                      if (active >= i && active > 0) setActive(active - 1);
-                    }}
+                    onClick={() => removeTab(i)}
                     className="rounded border px-2 text-xs"
                   >
                     x
@@ -230,7 +241,7 @@ export default function HomePage() {
             </p>
             <textarea
               className="w-full min-h-56 rounded border p-3 text-sm"
-              placeholder="Type text or HTML. We'll display exactly what you put in (no auto‑format)."
+              placeholder="Type text or HTML. We'll display exactly what you put in (no auto-format)."
               value={tabs[active].content}
               onChange={(e) => updateContent(active, e.target.value)}
             />
