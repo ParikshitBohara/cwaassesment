@@ -1,7 +1,7 @@
 type Props = {
   studentNo: string;
   name: string;
-  date?: string; // keep static to avoid hydration issues
+  date?: string; 
 };
 
 export default function Footer({ name, studentNo, date = "18/08/2025" }: Props) {

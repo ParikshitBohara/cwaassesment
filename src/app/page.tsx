@@ -105,12 +105,10 @@ ${tabs.map((t, i) => `
 }
 
 export default function HomePage() {
-  // deterministic initial state
   const [tabs, setTabs] = useState<TabDef[]>(START_TABS);
   const [active, setActive] = useState(0);
-  const [copied, setCopied] = useState(false); // <-- for "Copied!" notice
+  const [copied, setCopied] = useState(false);
 
-  // Persist builder state to localStorage (builder only)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -119,7 +117,6 @@ export default function HomePage() {
         if (Array.isArray(parsed) && parsed.every(t => t && typeof t.id === "string")) {
           const loaded = parsed as TabDef[];
           setTabs(loaded);
-          // align idCounter with highest number suffix
           const maxNum =
             loaded
               .map(t => /^t(\d+)$/.exec(t.id)?.[1])
@@ -130,14 +127,12 @@ export default function HomePage() {
         }
       }
     } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs)); } catch {}
   }, [tabs]);
 
-  // client-only id counter for new tabs
   const idCounter = useRef(START_TABS.length + 1);
   const nextId = (existing: TabDef[]) => {
     const used = new Set(existing.map(t => t.id));
@@ -163,7 +158,6 @@ export default function HomePage() {
 
   return (
     <div className="grid w-full grid-cols-12 gap-4 md:gap-6 animate-fade-in">
-      {/* Tabs headers */}
       <section className="col-span-12 md:col-span-3">
         <h2 className="mb-4 text-xl font-semibold text-theme-primary">Tabs</h2>
 
@@ -226,7 +220,6 @@ export default function HomePage() {
         </ul>
       </section>
 
-      {/* Tabs content (editor + live preview) */}
       <section className="col-span-12 md:col-span-4">
         <h2 className="mb-4 text-xl font-semibold text-theme-primary">Tabs Content</h2>
 
@@ -255,7 +248,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Output + code preview */}
       <section className="col-span-12 md:col-span-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex gap-2 items-center">

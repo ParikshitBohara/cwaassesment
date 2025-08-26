@@ -3,7 +3,7 @@ export default function AboutPage() {
     <main className="mx-auto max-w-3xl px-6 py-10 space-y-8 animate-fade-in">
       <h1 className="text-4xl font-bold text-theme-primary">About</h1>
       <p className="text-lg text-theme-secondary">
-        Subject: CSE3CWA / CSE5006
+        Subject: CSE3CWA
       </p>
 
       <section className="card">
@@ -18,7 +18,6 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold text-theme-primary mb-4">How to use this website</h2>
         <p className="text-theme-secondary mb-6 leading-relaxed">
           This site generates copy-pasteable HTML5 + JS (with inline CSS) that can be used in Moodle.
-          The interface provides an intuitive way to create interactive content for your courses.
         </p>
         <div className="aspect-video w-full border border-theme-primary rounded-lg overflow-hidden shadow-lg">
           <iframe

@@ -6,7 +6,6 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// === Fonts ===
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,13 +16,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// === Metadata ===
 export const metadata: Metadata = {
   title: "Assignment 1",
   description: "Next.js app for LMS code generation",
 };
 
-// === Your details (edit) ===
 const STUDENT_NO = "21885934";
 const STUDENT_NAME = "Parikshit Bohara";
 

@@ -18,17 +18,14 @@ export default function Header({ studentNo, title = "Title" }: Props) {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Close on route change
   useEffect(() => setMenuOpen(false), [pathname]);
 
-  // Close on ESC / click outside
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setMenuOpen(false);
         buttonRef.current?.focus();
       }
-      // Simple arrow navigation inside the menu
       if (!menuOpen || !menuRef.current) return;
       const items = menuRef.current.querySelectorAll<HTMLAnchorElement>('a[role="menuitem"]');
       if (!items.length) return;
@@ -63,7 +60,6 @@ export default function Header({ studentNo, title = "Title" }: Props) {
     { href: "/court-room", label: "Court Room" },
   ];
 
-  // Default to dark theme if theme is not yet initialized
   const isDark = theme === 'dark';
 
   return (

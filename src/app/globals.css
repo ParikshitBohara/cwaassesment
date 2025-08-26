@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
-/* CSS Variables for Theme System */
 :root {
-  /* Light Theme Colors - White/Gray */
   --background-primary: #ffffff;
   --background-secondary: #f8f9fa;
   --background-tertiary: #e9ecef;
@@ -29,12 +27,10 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   
-  /* Legacy variables for compatibility */
   --background: var(--background-primary);
   --foreground: var(--text-primary);
 }
 
-/* Dark Theme Colors - Black/Gray */
 [data-theme="dark"] {
   --background-primary: #000000;
   --background-secondary: #1a1a1a;
@@ -62,12 +58,10 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
   
-  /* Legacy variables for compatibility */
   --background: var(--background-primary);
   --foreground: var(--text-primary);
 }
 
-/* Base Styles */
 * {
   box-sizing: border-box;
 }
@@ -84,7 +78,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Smooth transitions for theme changes */
 * {
   transition: background-color 0.3s ease, 
               color 0.3s ease, 
@@ -92,7 +85,6 @@ body {
               box-shadow 0.3s ease;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -110,19 +102,16 @@ body {
   background: var(--text-tertiary);
 }
 
-/* Focus styles */
 *:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
-/* Selection styles */
 ::selection {
   background: var(--accent-primary);
   color: var(--text-inverse);
 }
 
-/* Typography improvements */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
   font-weight: 600;
@@ -151,7 +140,6 @@ a:hover {
   color: var(--accent-secondary);
 }
 
-/* Button base styles */
 button {
   cursor: pointer;
   border: none;
@@ -160,7 +148,6 @@ button {
   transition: all 0.2s ease;
 }
 
-/* Input base styles */
 input, textarea, select {
   background: var(--background-elevated);
   border: 1px solid var(--border-primary);
@@ -177,7 +164,6 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Card styles */
 .card {
   background: var(--background-elevated);
   border: 1px solid var(--border-primary);
@@ -192,7 +178,6 @@ input:focus, textarea:focus, select:focus {
   transform: translateY(-2px);
 }
 
-/* Utility classes for theme-aware styling */
 .bg-theme-primary { background: var(--background-primary); }
 .bg-theme-secondary { background: var(--background-secondary); }
 .bg-theme-tertiary { background: var(--background-tertiary); }
@@ -206,7 +191,6 @@ input:focus, textarea:focus, select:focus {
 .border-theme-secondary { border-color: var(--border-secondary); }
 .border-theme-accent { border-color: var(--border-accent); }
 
-/* Animation utilities */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -226,7 +210,6 @@ input:focus, textarea:focus, select:focus {
 .animate-slide-in { animation: slideIn 0.3s ease-out; }
 .animate-scale-in { animation: scaleIn 0.2s ease-out; }
 
-/* Responsive utilities */
 @media (max-width: 768px) {
   body {
     font-size: 14px;
