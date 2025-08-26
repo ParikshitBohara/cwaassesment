@@ -21,7 +21,7 @@ export default function AboutPage() {
         </p>
         <div className="aspect-video w-full border border-theme-primary rounded-lg overflow-hidden shadow-lg">
           <iframe
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            src="https://www.youtube.com/embed/YdNgOfdxREQ?si=VoJLapAkNV7gB1zb"
             title="Demo video"
             className="w-full h-full"
             allowFullScreen
