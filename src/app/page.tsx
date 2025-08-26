@@ -10,7 +10,7 @@ const START_TABS: TabDef[] = [
   { id: "t3", label: "3. Index.html",         content: "" },
 ];
 
-const STORAGE_KEY = "tabs_builder_state_v1"; 
+const STORAGE_KEY = "tabs_builder_state_v1";
 
 function escapeHTML(s: string) {
   return s.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]!));
@@ -105,11 +105,12 @@ ${tabs.map((t, i) => `
 }
 
 export default function HomePage() {
-  // ✅ deterministic initial state
+  // deterministic initial state
   const [tabs, setTabs] = useState<TabDef[]>(START_TABS);
   const [active, setActive] = useState(0);
+  const [copied, setCopied] = useState(false); // <-- for "Copied!" notice
 
-  // 🔒 Persist builder state to localStorage (builder only)
+  // Persist builder state to localStorage (builder only)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -118,12 +119,13 @@ export default function HomePage() {
         if (Array.isArray(parsed) && parsed.every(t => t && typeof t.id === "string")) {
           const loaded = parsed as TabDef[];
           setTabs(loaded);
-          // Align id counter with the highest numeric suffix among loaded ids
-          const maxNum = loaded
-            .map(t => /^t(\d+)$/.exec(t.id)?.[1])
-            .filter(Boolean)
-            .map(n => parseInt(n as string, 10))
-            .reduce((a, b) => Math.max(a, b), START_TABS.length) || START_TABS.length;
+          // align idCounter with highest number suffix
+          const maxNum =
+            loaded
+              .map(t => /^t(\d+)$/.exec(t.id)?.[1])
+              .filter(Boolean)
+              .map(n => parseInt(n as string, 10))
+              .reduce((a, b) => Math.max(a, b), START_TABS.length) || START_TABS.length;
           idCounter.current = Math.max(idCounter.current, maxNum + 1);
         }
       }
@@ -256,14 +258,29 @@ export default function HomePage() {
       {/* Output + code preview */}
       <section className="col-span-12 md:col-span-5">
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <button
               type="button"
-              onClick={() => { navigator.clipboard.writeText(output); }}
+              onClick={async () => {
+                await navigator.clipboard.writeText(output);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              }}
               className="rounded-lg border border-theme-primary bg-theme-elevated px-6 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-all duration-200 hover:scale-105"
+              aria-describedby="copy-status"
             >
               Copy Output
             </button>
+
+            <span
+              id="copy-status"
+              role="status"
+              aria-live="polite"
+              className={`text-xs ${copied ? "opacity-100" : "opacity-0"} transition-opacity duration-200`}
+            >
+              {copied ? "Copied!" : "\u00A0"}
+            </span>
+
             <a
               className="rounded-lg border border-theme-primary bg-theme-elevated px-6 py-2 text-sm text-theme-primary hover:bg-theme-secondary transition-all duration-200 hover:scale-105"
               href={`data:text/html;charset=utf-8,${encodeURIComponent(output)}`}
