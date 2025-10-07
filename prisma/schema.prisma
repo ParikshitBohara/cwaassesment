@@ -13,6 +13,7 @@ model Progress {
   stage1         Boolean  @default(false)
   stage2         Boolean  @default(false)
   stage3         Boolean  @default(false)
+  stage4         Boolean  @default(false) // NEW
   elapsedSeconds Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

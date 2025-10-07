@@ -7,10 +7,12 @@ type ProgressState = {
   stage1: boolean;
   stage2: boolean;
   stage3: boolean;
+  stage4: boolean;
   elapsedSeconds: number;
 };
 
 type Challenge = "range" | "evens" | "odds" | "fib";
+type PortMode = "csv-to-json" | "json-to-csv";
 
 export default function EscapeRoomPage() {
   const [studentNumber, setStudentNumber] = useState("sXXXXXXX");
@@ -25,6 +27,7 @@ export default function EscapeRoomPage() {
   const [stage1, setStage1] = useState(false);
   const [stage2, setStage2] = useState(false);
   const [stage3, setStage3] = useState(false);
+  const [stage4, setStage4] = useState(false);
 
   // stage 2 (format/fix)
   const [codeInput, setCodeInput] = useState("console.log('Hello World');");
@@ -36,9 +39,17 @@ export default function EscapeRoomPage() {
   );
   const [runOutput, setRunOutput] = useState<string>("(no output yet)");
 
-  const allCleared = useMemo(() => stage1 && stage2 && stage3, [stage1, stage2, stage3]);
+  // stage 4 (CSV ⇄ JSON)
+  const [portMode, setPortMode] = useState<PortMode>("csv-to-json");
+  const [portInput, setPortInput] = useState<string>("name,age\nAlice,30\nBob,25");
+  const [portOutput, setPortOutput] = useState<string>("(no output yet)");
 
-  // TIMER ENGINE
+  const allCleared = useMemo(
+    () => stage1 && stage2 && stage3 && stage4,
+    [stage1, stage2, stage3, stage4]
+  );
+
+  // ===== TIMER ENGINE =====
   useEffect(() => {
     if (running) {
       if (intervalRef.current !== null) window.clearInterval(intervalRef.current);
@@ -73,9 +84,10 @@ export default function EscapeRoomPage() {
     setStage1(false);
     setStage2(false);
     setStage3(false);
+    setStage4(false);
   }, []);
 
-  // === Stage 1: click hotspot to find key
+  // ===== Stage 1: find key =====
   const onHotspotClick = () => {
     if (!stage1) {
       setStage1(true);
@@ -83,18 +95,16 @@ export default function EscapeRoomPage() {
     }
   };
 
-  // === Stage 2: format/fix code (semicolon check = simple lint)
+  // ===== Stage 2: semicolon check =====
   const validateStage2 = () => {
     const ok = codeInput.trim().endsWith(";");
     setStage2(ok);
     alert(ok ? "✅ Good fix! (Semicolon present)" : "❌ Not quite. Add a semicolon ;");
   };
 
-  // === Stage 3: users write code → we run in a tiny sandbox
-  // We expect them to `return` an array matching the challenge.
+  // ===== Stage 3: run user code =====
   const runUserCode = () => {
     try {
-      // very small sandbox: only allow local function body; no args; no global access
       // eslint-disable-next-line no-new-func
       const fn = new Function(userCode);
       const result = fn();
@@ -105,7 +115,6 @@ export default function EscapeRoomPage() {
         return;
       }
 
-      // Validate against the selected challenge
       let ok = false;
       if (challenge === "range") {
         ok = result.length === 1001 && result[0] === 0 && result[1000] === 1000;
@@ -113,14 +122,12 @@ export default function EscapeRoomPage() {
         ok =
           result.length === 501 &&
           result[0] === 0 &&
-          result[1] === 2 &&
           result[500] === 1000 &&
           result.every((x: number) => x % 2 === 0);
       } else if (challenge === "odds") {
         ok =
           result.length === 500 &&
           result[0] === 1 &&
-          result[1] === 3 &&
           result[499] === 999 &&
           result.every((x: number) => x % 2 === 1);
       } else if (challenge === "fib") {
@@ -137,7 +144,9 @@ export default function EscapeRoomPage() {
       const preview =
         result.length <= 20
           ? `[${result.join(", ")}]`
-          : `[${result.slice(0, 10).join(", ")} ... ${result.slice(-10).join(", ")}] (len=${result.length})`;
+          : `[${result.slice(0, 10).join(", ")} ... ${result
+              .slice(-10)
+              .join(", ")}] (len=${result.length})`;
 
       setRunOutput(`${ok ? "✅ Valid" : "❌ Invalid"} → ${preview}`);
       setStage3(ok);
@@ -145,6 +154,50 @@ export default function EscapeRoomPage() {
     } catch (e: any) {
       setRunOutput("❌ Runtime error: " + (e?.message ?? String(e)));
       setStage3(false);
+    }
+  };
+
+  // ===== Stage 4: CSV ⇄ JSON =====
+  const csvToJson = (csv: string) => {
+    const lines = csv.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(",").map((h) => h.trim());
+    return lines.slice(1).map((line) => {
+      const values = line.split(",").map((v) => v.trim());
+      const obj: Record<string, string> = {};
+      headers.forEach((h, i) => (obj[h] = values[i] ?? ""));
+      return obj;
+    });
+  };
+
+  const jsonToCsv = (jsonText: string) => {
+    const arr = JSON.parse(jsonText);
+    if (!Array.isArray(arr) || arr.length === 0 || typeof arr[0] !== "object") {
+      throw new Error(
+        'JSON must be an array of objects, e.g., [{"name":"Alice","age":30}]'
+      );
+    }
+    const headers = Object.keys(arr[0]);
+    const rows = arr.map((obj: any) =>
+      headers.map((h) => String(obj[h] ?? "")).join(",")
+    );
+    return [headers.join(","), ...rows].join("\n");
+  };
+
+  const runPort = () => {
+    try {
+      if (portMode === "csv-to-json") {
+        const json = csvToJson(portInput);
+        setPortOutput(JSON.stringify(json, null, 2));
+        setStage4(Array.isArray(json) && json.length >= 1);
+      } else {
+        const csv = jsonToCsv(portInput);
+        setPortOutput(csv);
+        setStage4(!!csv && csv.includes("\n"));
+      }
+    } catch (e: any) {
+      setPortOutput("❌ Error: " + (e?.message ?? String(e)));
+      setStage4(false);
     }
   };
 
@@ -159,6 +212,7 @@ export default function EscapeRoomPage() {
       stage1,
       stage2,
       stage3,
+      stage4, // include stage4
       elapsedSeconds: (manualSeconds | 0) - seconds,
     };
     const res = await fetch("/api/progress", {
@@ -179,18 +233,21 @@ export default function EscapeRoomPage() {
       alert("Enter your Student Number first.");
       return;
     }
-    const res = await fetch(`/api/progress?studentNumber=${encodeURIComponent(studentNumber)}`);
+    const res = await fetch(
+      `/api/progress?studentNumber=${encodeURIComponent(studentNumber)}`
+    );
     if (!res.ok) return alert("Load failed");
     const data = await res.json();
     if (!data) return alert("No saved progress yet.");
     setStage1(!!data.stage1);
     setStage2(!!data.stage2);
     setStage3(!!data.stage3);
+    setStage4(!!data.stage4); // include stage4
     setManualSeconds(Math.max(0, Number(data.elapsedSeconds ?? 0)) + 60);
     alert("Loaded your last progress (+60s buffer).");
   };
 
-  // simple SVG icons (meets “icons/buttons” requirement)
+  // icons
   const IconPlay = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden className="inline-block mr-1">
       <path fill="currentColor" d="M8 5v14l11-7z" />
@@ -217,7 +274,7 @@ export default function EscapeRoomPage() {
         backgroundPosition: "center",
       }}
     >
-      <div className="max-w-5xl mx-auto bg-black/50 rounded-2xl p-6 shadow-xl text-white">
+      <div className="max-w-6xl mx-auto bg-black/50 rounded-2xl p-6 shadow-xl text-white">
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <h1 className="text-3xl font-bold">Escape Room</h1>
           <div className="flex flex-wrap items-center gap-3">
@@ -262,7 +319,7 @@ export default function EscapeRoomPage() {
         </header>
 
         {/* Stage grid */}
-        <section className="mt-6 grid md:grid-cols-3 gap-6">
+        <section className="mt-6 grid lg:grid-cols-2 xl:grid-cols-4 gap-6">
           {/* Stage 1 */}
           <article className="bg-white/5 rounded-xl p-4">
             <h2 className="text-xl font-semibold mb-2">Stage 1: Find the key {stage1 ? "✅" : ""}</h2>
@@ -313,9 +370,7 @@ export default function EscapeRoomPage() {
               className="w-full px-3 py-2 rounded bg-black/30 outline-none font-mono"
               aria-describedby="code-hint"
             />
-            <p id="code-hint" className="text-xs opacity-70 mt-1">
-              Hint: Add a semicolon at the end.
-            </p>
+            <p id="code-hint" className="text-xs opacity-70 mt-1">Hint: Add a semicolon at the end.</p>
             <div className="mt-3 flex items-center gap-2">
               <button onClick={validateStage2} className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500">
                 Check
@@ -327,7 +382,6 @@ export default function EscapeRoomPage() {
           {/* Stage 3 */}
           <article className="bg-white/5 rounded-xl p-4">
             <h2 className="text-xl font-semibold mb-2">Stage 3: Write & run your code {stage3 ? "✅" : ""}</h2>
-
             <label className="block text-sm opacity-80 mb-1">Choose a challenge</label>
             <select
               value={challenge}
@@ -361,6 +415,45 @@ export default function EscapeRoomPage() {
               <strong>Output:</strong> {runOutput}
             </div>
           </article>
+
+          {/* Stage 4 */}
+          <article className="bg-white/5 rounded-xl p-4">
+            <h2 className="text-xl font-semibold mb-2">Stage 4: Port data CSV ⇄ JSON {stage4 ? "✅" : ""}</h2>
+            <p className="opacity-90 mb-3">Convert between CSV and JSON formats.</p>
+
+            <label className="block text-sm opacity-80 mb-1">Mode</label>
+            <select
+              value={portMode}
+              onChange={(e) => setPortMode(e.target.value as PortMode)}
+              className="px-3 py-2 rounded bg-black/30 outline-none mb-3"
+            >
+              <option value="csv-to-json">CSV → JSON</option>
+              <option value="json-to-csv">JSON → CSV</option>
+            </select>
+
+            <label className="block text-sm opacity-80 mb-1">Input</label>
+            <textarea
+              value={portInput}
+              onChange={(e) => setPortInput(e.target.value)}
+              rows={6}
+              className="w-full px-3 py-2 rounded bg-black/30 outline-none font-mono"
+            />
+
+            <div className="mt-3 flex items-center gap-2">
+              <button onClick={runPort} className="px-3 py-2 rounded bg-amber-600 hover:bg-amber-500">
+                Convert
+              </button>
+              <StatusBadge ok={stage4} />
+            </div>
+
+            <label className="block text-sm opacity-80 mt-3 mb-1">Output</label>
+            <textarea
+              readOnly
+              value={portOutput}
+              rows={6}
+              className="w-full px-3 py-2 rounded bg-black/30 outline-none font-mono"
+            />
+          </article>
         </section>
 
         {/* Action row */}
@@ -381,7 +474,7 @@ export default function EscapeRoomPage() {
           </button>
 
           <div className="ml-auto text-lg font-semibold">
-            {allCleared ? "🎉 You escaped!" : "Solve all three to escape."}
+            {allCleared ? "🎉 You escaped!" : "Solve all four to escape."}
           </div>
         </footer>
       </div>

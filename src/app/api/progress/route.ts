@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!body?.studentNumber) {
     return NextResponse.json({ error: "studentNumber required" }, { status: 400 });
   }
-  const { studentNumber, stage1, stage2, stage3, elapsedSeconds } = body;
+  const { studentNumber, stage1, stage2, stage3, stage4, elapsedSeconds } = body;
 
   const saved = await prisma.progress.create({
     data: {
@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       stage1: !!stage1,
       stage2: !!stage2,
       stage3: !!stage3,
+      stage4: !!stage4,
       elapsedSeconds: Number(elapsedSeconds ?? 0),
     },
   });
@@ -43,7 +44,7 @@ export async function PUT(req: NextRequest) {
   if (!body?.studentNumber) {
     return NextResponse.json({ error: "studentNumber required" }, { status: 400 });
   }
-  const { studentNumber, stage1, stage2, stage3, elapsedSeconds } = body;
+  const { studentNumber, stage1, stage2, stage3, stage4, elapsedSeconds } = body;
 
   const existing = await prisma.progress.findFirst({
     where: { studentNumber },
@@ -58,6 +59,7 @@ export async function PUT(req: NextRequest) {
           stage1: !!stage1,
           stage2: !!stage2,
           stage3: !!stage3,
+          stage4: !!stage4,
           elapsedSeconds: Number(elapsedSeconds ?? 0),
         },
       })
@@ -67,6 +69,7 @@ export async function PUT(req: NextRequest) {
           stage1: !!stage1,
           stage2: !!stage2,
           stage3: !!stage3,
+          stage4: !!stage4,
           elapsedSeconds: Number(elapsedSeconds ?? 0),
         },
       });
