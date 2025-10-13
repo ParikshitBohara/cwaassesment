@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
