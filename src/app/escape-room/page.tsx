@@ -29,7 +29,7 @@ export default function EscapeRoomPage() {
   const [stage3, setStage3] = useState(false);
   const [stage4, setStage4] = useState(false);
 
-  // dev helper: let you show all at once for quick testing
+  // dev helper: 
   const [showAll, setShowAll] = useState(false);
 
   // stage 2
