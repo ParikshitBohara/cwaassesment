@@ -7,16 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Progress {
-  id             String   @id @default(cuid())
-  studentNumber  String
-  stage1         Boolean  @default(false)
-  stage2         Boolean  @default(false)
-  stage3         Boolean  @default(false)
-  stage4         Boolean  @default(false) // NEW
-  elapsedSeconds Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  @@index([studentNumber])
+model Room {
+  id        String   @id @default(cuid())
+  title     String
+  timer     Int
+  bgImage   String
+  stages    Stage[]
+  createdAt DateTime @default(now())
 }
+
+model Stage {
+  id          String  @id @default(cuid())
+  roomId      String
+  title       String
+  type        String   // e.g. "code", "question", "click", "convert"
+  question    String?
+  correctAnswer String?
+  hotspotX    Float?
+  hotspotY    Float?
+  order       Int
+  room        Room     @relation(fields: [roomId], references: [id])
+}
+
