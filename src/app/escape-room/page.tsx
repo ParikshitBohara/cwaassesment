@@ -71,39 +71,376 @@ function buildPlayableHtml(room: Room) {
 <title>${safeTitle}</title>
 <style>
 :root{
-  --bg:#0b0f19;--card:rgba(255,255,255,.06);--text:#f8fafc;--muted:#b8c1d4;
-  --pin:#60a5fa;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(255, 255, 255, 0.8);
+  
+  --text-primary: #000000;
+  --text-secondary: #6c757d;
+  --text-tertiary: #adb5bd;
+  --text-inverse: #ffffff;
+  
+  --border-primary: #dee2e6;
+  --border-secondary: #ced4da;
+  --border-accent: #3b82f6;
+  
+  --accent-primary: #3b82f6;
+  --accent-secondary: #1d4ed8;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-error: #ef4444;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  --pin: #60a5fa;
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --err: #ef4444;
 }
+
+[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2d2d2d;
+  --bg-elevated: #000000;
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  --text-inverse: #000000;
+  
+  --border-primary: #404040;
+  --border-secondary: #525252;
+  --border-accent: #60a5fa;
+  
+  --accent-primary: #60a5fa;
+  --accent-secondary: #3b82f6;
+  --accent-success: #34d399;
+  --accent-warning: #fbbf24;
+  --accent-error: #f87171;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
 html,body{height:100%}
 body{
-  margin:0;background:linear-gradient(120deg,#0b0f19,#111827);
-  color:var(--text);font-family:system-ui,Inter,Segoe UI,Roboto,sans-serif;
-  display:grid;place-items:start center
+  margin:0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  display: grid;
+  place-items: start center;
 }
-.wrap{width:min(1150px,96vw);padding:22px}
-header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.title{font-weight:800;font-size:clamp(22px,2.6vw,32px)}
-.timer{font-family:ui-monospace,Menlo,monospace;background:var(--card);padding:8px 12px;border-radius:10px}
-.scene{position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 44px rgba(0,0,0,.38)}
-.scene img{display:block;width:100%;height:auto}
-.pin{position:absolute;transform:translate(-50%,-50%);background:var(--pin);color:#001122;
-  width:30px;height:30px;border:2px solid #fff;border-radius:999px;
-  display:grid;place-items:center;font-weight:800;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.45)}
-.grid{display:grid;gap:16px;margin-top:16px}
-.card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px}
-.card h2{margin:0 0 6px}
-.muted{color:var(--muted)}
-textarea,input[type="text"]{
-  width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.04);color:var(--text);outline:none
+
+.wrap{
+  width: min(1150px, 96vw);
+  padding: 1.5rem;
+  max-width: 100%;
 }
-button{border:0;padding:10px 14px;border-radius:10px;background:#3b82f6;color:white;font-weight:700;cursor:pointer}
-button.ok{background:var(--ok)}button.warn{background:var(--warn)}button.ghost{background:#64748b}
-.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08)}
-.okbg{background:rgba(34,197,94,.2)}.errbg{background:rgba(239,68,68,.2)}
-footer{margin-top:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.disabled{opacity:.5;pointer-events:none}
-pre{white-space:pre-wrap;word-break:break-word}
+
+header{
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
+}
+
+.title{
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.timer{
+  font-family: ui-monospace, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.scene{
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.scene:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+}
+
+.scene img{
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.scene:hover img {
+  transform: scale(1.02);
+}
+
+.pin{
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: var(--pin);
+  color: var(--text-inverse);
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--bg-elevated);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.pin:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: var(--shadow-xl);
+}
+
+.grid{
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.card{
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card h2{
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.muted{
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+textarea, input[type="text"]{
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  outline: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  resize: vertical;
+}
+
+textarea:focus, input[type="text"]:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+button{
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+button:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.ok{background: var(--accent-success)}
+button.ok:hover{background: #059669;}
+
+button.warn{background: var(--accent-warning)}
+button.warn:hover{background: #d97706;}
+
+button.ghost{
+  background: var(--text-tertiary);
+  color: var(--text-inverse);
+}
+button.ghost:hover{
+  background: var(--text-secondary);
+}
+
+.badge{
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.okbg{
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--accent-success);
+  color: var(--accent-success);
+}
+
+.errbg{
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--accent-error);
+  color: var(--accent-error);
+}
+
+footer{
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.disabled{
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
+
+pre{
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--bg-secondary);
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  font-family: ui-monospace, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  overflow-x: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 1rem;
+  }
+  
+  header {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+  
+  footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
 </style>
 </head>
 <body>
@@ -529,30 +866,30 @@ export default function BuilderPage() {
   }
 
   return (
-    <main className="min-h-screen p-6 text-white" style={{ background: "linear-gradient(120deg,#0b0f19,#111827)" }}>
+    <main className="min-h-screen p-6 bg-theme-primary text-theme-primary">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-[280px,1fr] gap-6">
         {/* Left: Rooms list / actions */}
-        <aside className="bg-white/5 rounded-2xl p-4 border border-white/10">
-          <h2 className="font-bold mb-3">Saved Rooms</h2>
+        <aside className="card bg-theme-elevated border-theme-primary">
+          <h2 className="font-bold mb-3 text-theme-primary">Saved Rooms</h2>
           <button
             onClick={loadRooms}
-            className="w-full mb-3 px-3 py-2 rounded bg-slate-600 hover:bg-slate-500 disabled:opacity-50"
+            className="w-full mb-3 px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary hover:bg-theme-secondary disabled:opacity-50 transition-all duration-200 hover:scale-105"
             disabled={loadingRooms}
           >
             {loadingRooms ? "Loading…" : "Refresh"}
           </button>
 
           <div className="space-y-2 max-h-[50vh] overflow-auto">
-            {rooms.length === 0 && <p className="text-sm opacity-70">No rooms yet.</p>}
+            {rooms.length === 0 && <p className="text-sm text-theme-secondary">No rooms yet.</p>}
             {rooms.map((r) => (
-              <div key={r.id} className="p-2 rounded bg-white/10 border border-white/10">
-                <div className="font-semibold text-sm truncate">{r.title}</div>
-                <div className="text-xs opacity-70">{new Date(r.createdAt ?? "").toLocaleString()}</div>
+              <div key={r.id} className="p-3 rounded-lg bg-theme-secondary border border-theme-primary hover:bg-theme-tertiary transition-all duration-200">
+                <div className="font-semibold text-sm truncate text-theme-primary">{r.title}</div>
+                <div className="text-xs text-theme-secondary">{new Date(r.createdAt ?? "").toLocaleString()}</div>
                 <div className="flex gap-2 mt-2">
-                  <button onClick={() => loadRoom(r.id!)} className="px-2 py-1 bg-blue-600 rounded text-sm">
+                  <button onClick={() => loadRoom(r.id!)} className="px-2 py-1 bg-accent-primary text-white rounded text-sm hover:bg-accent-secondary transition-all duration-200 hover:scale-105">
                     Edit
                   </button>
-                  <button onClick={() => deleteExisting(r.id!)} className="px-2 py-1 bg-rose-600 rounded text-sm">
+                  <button onClick={() => deleteExisting(r.id!)} className="px-2 py-1 bg-accent-error text-white rounded text-sm hover:bg-red-600 transition-all duration-200 hover:scale-105">
                     Delete
                   </button>
                 </div>
@@ -560,23 +897,23 @@ export default function BuilderPage() {
             ))}
           </div>
 
-          <hr className="my-4 border-white/10" />
+          <hr className="my-4 border-theme-primary" />
 
           <div className="space-y-2">
-            <button onClick={saveNew} className="w-full px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500">
+            <button onClick={saveNew} className="w-full px-3 py-2 rounded-lg bg-accent-success text-white hover:bg-green-600 transition-all duration-200 hover:scale-105">
               💾 Save New
             </button>
             <button
               onClick={updateExisting}
               disabled={!roomId}
-              className="w-full px-3 py-2 rounded bg-amber-600 hover:bg-amber-500 disabled:opacity-50"
+              className="w-full px-3 py-2 rounded-lg bg-accent-warning text-white hover:bg-yellow-600 disabled:opacity-50 transition-all duration-200 hover:scale-105"
             >
               ⟳ Update
             </button>
             <button
               onClick={() => deleteExisting()}
               disabled={!roomId}
-              className="w-full px-3 py-2 rounded bg-rose-600 hover:bg-rose-500 disabled:opacity-50"
+              className="w-full px-3 py-2 rounded-lg bg-accent-error text-white hover:bg-red-600 disabled:opacity-50 transition-all duration-200 hover:scale-105"
             >
               🗑 Delete
             </button>
@@ -585,32 +922,37 @@ export default function BuilderPage() {
 
         {/* Right: Editor */}
         <section>
-          <header className="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <header className="card bg-theme-elevated border-theme-primary">
             <div className="grid sm:grid-cols-3 gap-3">
               <label className="flex flex-col">
-                <span className="text-sm opacity-80">Title</span>
+                <span className="text-sm text-theme-secondary mb-1">Title</span>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="px-3 py-2 rounded bg-white/10 outline-none"
+                  className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
                   placeholder="My Escape Room"
                 />
               </label>
 
               <label className="flex flex-col">
-                <span className="text-sm opacity-80">Timer (seconds)</span>
+                <span className="text-sm text-theme-secondary mb-1">Timer (seconds)</span>
                 <input
                   type="number"
                   min={10}
                   value={timer}
                   onChange={(e) => setTimer(Number(e.target.value))}
-                  className="px-3 py-2 rounded bg-white/10 outline-none"
+                  className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
                 />
               </label>
 
               <label className="flex flex-col">
-                <span className="text-sm opacity-80">Background image</span>
-                <input type="file" accept="image/*" onChange={onBgChange} />
+                <span className="text-sm text-theme-secondary mb-1">Background image</span>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={onBgChange}
+                  className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
+                />
               </label>
             </div>
           </header>
@@ -619,15 +961,15 @@ export default function BuilderPage() {
           <div
             ref={sceneRef}
             onClick={onSceneClick}
-            className="relative rounded-2xl overflow-hidden bg-black/20 border border-white/10 mt-4"
+            className="relative rounded-2xl overflow-hidden bg-theme-secondary border border-theme-primary mt-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
             style={{ minHeight: 320 }}
           >
             {!bgImage ? (
-              <div className="grid place-items-center h-64 text-slate-300">Upload a background image to preview</div>
+              <div className="grid place-items-center h-64 text-theme-secondary">Upload a background image to preview</div>
             ) : (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={bgImage} alt="scene" className="w-full h-auto block select-none" />
+                <img src={bgImage} alt="scene" className="w-full h-auto block select-none transition-transform duration-300" />
                 {/* show all click hotspots */}
                 {sortedStages
                   .filter((s) => s.type === "click" && s.hotspotX != null && s.hotspotY != null)
@@ -635,7 +977,7 @@ export default function BuilderPage() {
                     <div
                       title={s.title}
                       key={s.id}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 bg-blue-400 text-black border-2 border-white/80 rounded-full w-8 h-8 grid place-items-center font-bold shadow"
+                      className="absolute -translate-x-1/2 -translate-y-1/2 bg-accent-primary text-white border-2 border-white rounded-full w-8 h-8 grid place-items-center font-bold shadow-lg hover:scale-110 transition-all duration-200"
                       style={{ left: `${s.hotspotX}%`, top: `${s.hotspotY}%` }}
                     >
                       🐞
@@ -643,7 +985,7 @@ export default function BuilderPage() {
                   ))}
                 {placingFor && (
                   <div className="absolute inset-3 grid place-items-start">
-                    <div className="px-3 py-1 rounded bg-amber-500 text-black font-semibold shadow">
+                    <div className="px-3 py-1 rounded-lg bg-accent-warning text-white font-semibold shadow-lg backdrop-filter blur(10px)">
                       Click anywhere to place hotspot…
                     </div>
                   </div>
@@ -653,40 +995,40 @@ export default function BuilderPage() {
           </div>
 
           {/* Stages list */}
-          <div className="mt-4 bg-white/5 rounded-2xl p-4 border border-white/10">
+          <div className="mt-4 card bg-theme-elevated border-theme-primary">
             <div className="flex flex-wrap gap-2 mb-3">
-              <button onClick={() => addStage("question")} className="px-3 py-2 bg-blue-600 rounded">
+              <button onClick={() => addStage("question")} className="px-3 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-secondary transition-all duration-200 hover:scale-105">
                 + Question
               </button>
-              <button onClick={() => addStage("format")} className="px-3 py-2 bg-blue-600 rounded">
+              <button onClick={() => addStage("format")} className="px-3 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-secondary transition-all duration-200 hover:scale-105">
                 + Format (semicolon)
               </button>
-              <button onClick={() => addStage("click")} className="px-3 py-2 bg-blue-600 rounded">
+              <button onClick={() => addStage("click")} className="px-3 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-secondary transition-all duration-200 hover:scale-105">
                 + Click (hotspot)
               </button>
-              <button onClick={() => addStage("codeRange")} className="px-3 py-2 bg-blue-600 rounded">
+              <button onClick={() => addStage("codeRange")} className="px-3 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-secondary transition-all duration-200 hover:scale-105">
                 + Code: 0→1000
               </button>
-              <button onClick={() => addStage("convert")} className="px-3 py-2 bg-blue-600 rounded">
+              <button onClick={() => addStage("convert")} className="px-3 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-secondary transition-all duration-200 hover:scale-105">
                 + CSV → JSON
               </button>
             </div>
 
-            {sortedStages.length === 0 && <p className="text-sm opacity-70">No stages yet. Add one above.</p>}
+            {sortedStages.length === 0 && <p className="text-sm text-theme-secondary">No stages yet. Add one above.</p>}
 
             <div className="space-y-3">
               {sortedStages.map((s, i) => (
-                <div key={s.id} className="rounded-xl p-3 bg-white/10 border border-white/10">
+                <div key={s.id} className="rounded-xl p-4 bg-theme-secondary border border-theme-primary hover:bg-theme-tertiary transition-all duration-200">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="font-semibold">Stage {i + 1}</div>
+                    <div className="font-semibold text-theme-primary">Stage {i + 1}</div>
                     <div className="flex gap-2">
-                      <button onClick={() => moveStage(s.id, -1)} className="px-2 py-1 bg-slate-600 rounded text-sm">
+                      <button onClick={() => moveStage(s.id, -1)} className="px-2 py-1 bg-theme-tertiary text-theme-primary rounded text-sm hover:bg-accent-primary hover:text-white transition-all duration-200 hover:scale-105">
                         ↑
                       </button>
-                      <button onClick={() => moveStage(s.id, 1)} className="px-2 py-1 bg-slate-600 rounded text-sm">
+                      <button onClick={() => moveStage(s.id, 1)} className="px-2 py-1 bg-theme-tertiary text-theme-primary rounded text-sm hover:bg-accent-primary hover:text-white transition-all duration-200 hover:scale-105">
                         ↓
                       </button>
-                      <button onClick={() => removeStage(s.id)} className="px-2 py-1 bg-rose-600 rounded text-sm">
+                      <button onClick={() => removeStage(s.id)} className="px-2 py-1 bg-accent-error text-white rounded text-sm hover:bg-red-600 transition-all duration-200 hover:scale-105">
                         Delete
                       </button>
                     </div>
@@ -694,20 +1036,20 @@ export default function BuilderPage() {
 
                   <div className="grid md:grid-cols-2 gap-3 mt-2">
                     <label className="flex flex-col">
-                      <span className="text-xs opacity-80">Title</span>
+                      <span className="text-xs text-theme-secondary mb-1">Title</span>
                       <input
                         value={s.title}
                         onChange={(e) => updateStage(s.id, { title: e.target.value })}
-                        className="px-3 py-2 rounded bg-black/30 outline-none"
+                        className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
                       />
                     </label>
 
                     <label className="flex flex-col">
-                      <span className="text-xs opacity-80">Type</span>
+                      <span className="text-xs text-theme-secondary mb-1">Type</span>
                       <select
                         value={s.type}
                         onChange={(e) => updateStage(s.id, { type: e.target.value as StageType })}
-                        className="px-3 py-2 rounded bg-black/30 outline-none"
+                        className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
                       >
                         <option value="question">Question</option>
                         <option value="format">Format (semicolon)</option>
@@ -721,15 +1063,15 @@ export default function BuilderPage() {
                   {/* Type-specific fields */}
                   {s.type === "click" ? (
                     <div className="mt-2">
-                      <div className="text-xs opacity-80 mb-1">Hotspot position (click “Place” then click on image)</div>
+                      <div className="text-xs text-theme-secondary mb-1">Hotspot position (click "Place" then click on image)</div>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setPlacingFor(s.id)}
-                          className="px-3 py-2 rounded bg-amber-600 hover:bg-amber-500"
+                          className="px-3 py-2 rounded-lg bg-accent-warning text-white hover:bg-yellow-600 transition-all duration-200 hover:scale-105"
                         >
                           Place
                         </button>
-                        <div className="text-sm opacity-80">
+                        <div className="text-sm text-theme-secondary">
                           {s.hotspotX != null && s.hotspotY != null ? (
                             <>
                               {s.hotspotX}% / {s.hotspotY}%
@@ -743,7 +1085,7 @@ export default function BuilderPage() {
                   ) : (
                     <>
                       <label className="flex flex-col mt-2">
-                        <span className="text-xs opacity-80">
+                        <span className="text-xs text-theme-secondary mb-1">
                           {s.type === "convert"
                             ? "CSV input"
                             : s.type === "format"
@@ -756,16 +1098,16 @@ export default function BuilderPage() {
                           rows={s.type === "format" ? 3 : 6}
                           value={s.question || ""}
                           onChange={(e) => updateStage(s.id, { question: e.target.value })}
-                          className="px-3 py-2 rounded bg-black/30 outline-none font-mono"
+                          className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none font-mono focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
                         />
                       </label>
 
                       <label className="flex flex-col mt-2">
-                        <span className="text-xs opacity-80">Correct answer (for “question”; optional otherwise)</span>
+                        <span className="text-xs text-theme-secondary mb-1">Correct answer (for "question"; optional otherwise)</span>
                         <input
                           value={s.correctAnswer || ""}
                           onChange={(e) => updateStage(s.id, { correctAnswer: e.target.value })}
-                          className="px-3 py-2 rounded bg-black/30 outline-none"
+                          className="px-3 py-2 rounded-lg border border-theme-primary bg-theme-elevated text-theme-primary outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all duration-200"
                         />
                       </label>
                     </>
@@ -780,14 +1122,14 @@ export default function BuilderPage() {
             <button
               onClick={previewExport}
               disabled={!readyToExport}
-              className="px-3 py-2 rounded bg-amber-600 hover:bg-amber-500 disabled:opacity-50"
+              className="px-4 py-2 rounded-lg bg-accent-warning text-white hover:bg-yellow-600 disabled:opacity-50 transition-all duration-200 hover:scale-105"
             >
               Preview playable HTML
             </button>
             <button
               onClick={downloadExport}
               disabled={!readyToExport}
-              className="px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+              className="px-4 py-2 rounded-lg bg-accent-success text-white hover:bg-green-600 disabled:opacity-50 transition-all duration-200 hover:scale-105"
             >
               Generate & download HTML
             </button>

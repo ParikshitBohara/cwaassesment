@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Assignment 1",
+  title: "Assignment 2",
   description: "Next.js app for LMS code generation",
 };
 
