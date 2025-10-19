@@ -32,6 +32,28 @@ type Room = {
    Helpers
    ========================================================= */
 
+function buildApiPayload({
+  title, timer, bgImage, stages,
+}: { title: string; timer: number; bgImage: string; stages: Stage[] }) {
+  return {
+    title: String(title ?? "").trim(),
+    timer: Number(timer),                    // force number
+    bgImage: String(bgImage ?? ""),
+    stages: Array.isArray(stages) ? stages
+      .sort((a, b) => a.order - b.order)
+      .map((s, i) => ({
+        order: Number.isFinite(s.order) ? s.order : i,
+        title: String(s.title ?? `Stage ${i + 1}`),
+        type: String(s.type ?? "question"),
+        question: s.question ?? null,
+        correctAnswer: s.correctAnswer ?? null,
+        hotspotX: s.hotspotX ?? null,
+        hotspotY: s.hotspotY ?? null,
+      })) : [],
+  };
+}
+
+
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 const escapeHtml = (s: string) =>
@@ -780,30 +802,42 @@ export default function BuilderPage() {
   );
 
   // CRUD actions
-  async function saveNew() {
-    const res = await fetch("/api/rooms", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(currentRoom),
-    });
-    if (!res.ok) return alert("❌ Save failed");
-    const data = await res.json();
-    setRoomId(data.id);
-    alert("✅ Saved");
-    loadRooms();
+async function saveNew() {
+  const payload = buildApiPayload(currentRoom);
+  if (!payload.title || !payload.bgImage || !Number.isFinite(payload.timer)) {
+    return alert("Please fill Title, Timer, and upload a Background image.");
   }
+  const res = await fetch("/api/rooms", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    console.log("POST /api/rooms error:", data);
+    return alert("❌ Save failed: " + (data?.error || res.status));
+  }
+  setRoomId(data.id);
+  alert("✅ Saved");
+  loadRooms();
+}
 
-  async function updateExisting() {
-    if (!roomId) return saveNew();
-    const res = await fetch(`/api/rooms/${roomId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(currentRoom),
-    });
-    if (!res.ok) return alert("❌ Update failed");
-    alert("✅ Updated");
-    loadRooms();
+async function updateExisting() {
+  if (!roomId) return saveNew();
+  const payload = buildApiPayload(currentRoom);
+  const res = await fetch(`/api/rooms/${roomId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    console.log("PUT /api/rooms error:", data);
+    return alert("❌ Update failed: " + (data?.error || res.status));
   }
+  alert("✅ Updated");
+  loadRooms();
+}
 
   async function deleteExisting(id?: string) {
     const target = id ?? roomId;
