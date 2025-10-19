@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+export const runtime = "nodejs"; // important on Vercel
+
 // GET /api/rooms
 export async function GET() {
   const rooms = await prisma.room.findMany({
@@ -11,39 +13,44 @@ export async function GET() {
 }
 
 // POST /api/rooms
-// Body: { title: string, timer: number, bgImage: string, stages: Array<{title,type,question?,correctAnswer?,hotspotX?,hotspotY?}> }
+// Body: { title: string, timer: number|string, bgImage: string, stages?: Array<...> }
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => null);
-  if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  try {
+    const body = await req.json();
+    const title = String(body?.title ?? "").trim();
+    const bgImage = String(body?.bgImage ?? "").trim();
+    const timerNum = Number(body?.timer); // coerce "60" -> 60
+    const stagesIn = Array.isArray(body?.stages) ? body.stages : [];
 
-  const { title, timer, bgImage, stages } = body;
+    if (!title || !bgImage || !Number.isFinite(timerNum)) {
+      return NextResponse.json(
+        { error: "title, timer, bgImage are required" },
+        { status: 400 }
+      );
+    }
 
-  if (!title || !Number.isFinite(timer) || !bgImage || !Array.isArray(stages)) {
-    return NextResponse.json(
-      { error: "title, timer, bgImage, stages[] are required" },
-      { status: 400 }
-    );
-  }
-
-  const room = await prisma.room.create({
-    data: {
-      title,
-      timer: Math.max(0, timer | 0),
-      bgImage,
-      stages: {
-        create: stages.map((s: any, i: number) => ({
-          order: i,
-          title: String(s.title ?? `Stage ${i + 1}`),
-          type: String(s.type ?? "question"),
-          question: s.question ?? null,
-          correctAnswer: s.correctAnswer ?? null,
-          hotspotX: s.hotspotX ?? null,
-          hotspotY: s.hotspotY ?? null,
-        })),
+    const room = await prisma.room.create({
+      data: {
+        title,
+        timer: Math.max(0, Math.floor(timerNum)),
+        bgImage,
+        stages: {
+          create: stagesIn.map((s: any, i: number) => ({
+            order: Number.isFinite(s?.order) ? s.order : i,
+            title: String(s?.title ?? `Stage ${i + 1}`),
+            type: String(s?.type ?? "question"),
+            question: s?.question ?? null,
+            correctAnswer: s?.correctAnswer ?? null,
+            hotspotX: s?.hotspotX ?? null,
+            hotspotY: s?.hotspotY ?? null,
+          })),
+        },
       },
-    },
-    include: { stages: { orderBy: { order: "asc" } } },
-  });
+      include: { stages: { orderBy: { order: "asc" } } },
+    });
 
-  return NextResponse.json(room, { status: 201 });
+    return NextResponse.json(room, { status: 201 });
+  } catch (e: any) {
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
 }
