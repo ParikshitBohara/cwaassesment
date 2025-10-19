@@ -17,15 +17,14 @@ model Room {
 }
 
 model Stage {
-  id          String  @id @default(cuid())
-  roomId      String
-  title       String
-  type        String   // e.g. "code", "question", "click", "convert"
-  question    String?
+  id            String  @id @default(cuid())
+  roomId        String
+  title         String
+  type          String // e.g. "code", "question", "click", "convert"
+  question      String?
   correctAnswer String?
-  hotspotX    Float?
-  hotspotY    Float?
-  order       Int
-  room        Room     @relation(fields: [roomId], references: [id])
+  hotspotX      Float?
+  hotspotY      Float?
+  order         Int
+  room          Room    @relation(fields: [roomId], references: [id])
 }
-
