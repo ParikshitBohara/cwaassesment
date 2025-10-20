@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { logEvent } from "@/lib/logger";
 
 export const runtime = "nodejs"; // important on Vercel
 
+
 // GET /api/rooms
 export async function GET() {
+  logEvent("GET /api/rooms called");
+  
   const rooms = await prisma.room.findMany({
     include: { stages: { orderBy: { order: "asc" } } },
     orderBy: { createdAt: "desc" },
   });
+  
+  logEvent("GET /api/rooms success", { count: rooms.length });
   return NextResponse.json(rooms);
 }
 
@@ -17,12 +23,15 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    logEvent("POST /api/rooms called", { body });
+
     const title = String(body?.title ?? "").trim();
     const bgImage = String(body?.bgImage ?? "").trim();
     const timerNum = Number(body?.timer); // coerce "60" -> 60
     const stagesIn = Array.isArray(body?.stages) ? body.stages : [];
 
     if (!title || !bgImage || !Number.isFinite(timerNum)) {
+    logEvent("POST /api/rooms invalid data", { title, timerNum, bgImage });
       return NextResponse.json(
         { error: "title, timer, bgImage are required" },
         { status: 400 }
@@ -49,8 +58,10 @@ export async function POST(req: Request) {
       include: { stages: { orderBy: { order: "asc" } } },
     });
 
+    logEvent("POST /api/rooms success", { id: room.id });
     return NextResponse.json(room, { status: 201 });
   } catch (e: any) {
+    logEvent("POST /api/rooms error", { error: String(e) });
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
