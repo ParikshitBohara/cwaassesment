@@ -1,0 +1,86 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: "21880927"
+        - heading "Title" [level=1] [ref=e8]
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - navigation "Primary" [ref=e11]:
+            - link "Tabs" [ref=e12] [cursor=pointer]:
+              - /url: /
+            - link "Escape Room" [ref=e13] [cursor=pointer]:
+              - /url: /escape-room
+            - link "Coding Races" [ref=e14] [cursor=pointer]:
+              - /url: /coding-races
+            - link "Court Room" [ref=e15] [cursor=pointer]:
+              - /url: /court-room
+          - generic [ref=e16]:
+            - link "About" [ref=e17] [cursor=pointer]:
+              - /url: /about
+            - button "Open menu" [ref=e18] [cursor=pointer]
+        - generic [ref=e24] [cursor=pointer]:
+          - checkbox "☀️ Dark Mode" [ref=e25]
+          - text: ☀️ Dark Mode
+    - main [ref=e26]:
+      - main [ref=e27]:
+        - generic [ref=e28]:
+          - complementary [ref=e29]:
+            - heading "Saved Rooms" [level=2] [ref=e30]
+            - button "Refresh" [ref=e31] [cursor=pointer]
+            - generic [ref=e32]:
+              - generic [ref=e33]:
+                - generic [ref=e34]: Room B 1761011501471
+                - generic [ref=e35]: 10/21/2025, 12:51:46 PM
+                - generic [ref=e36]:
+                  - button "Edit" [ref=e37] [cursor=pointer]
+                  - button "Delete" [ref=e38] [cursor=pointer]
+              - generic [ref=e39]:
+                - generic [ref=e40]: Room A 1761011501471
+                - generic [ref=e41]: 10/21/2025, 12:51:44 PM
+                - generic [ref=e42]:
+                  - button "Edit" [ref=e43] [cursor=pointer]
+                  - button "Delete" [ref=e44] [cursor=pointer]
+              - generic [ref=e45]:
+                - generic [ref=e46]: My Escape Room
+                - generic [ref=e47]: 10/20/2025, 3:20:37 PM
+                - generic [ref=e48]:
+                  - button "Edit" [ref=e49] [cursor=pointer]
+                  - button "Delete" [ref=e50] [cursor=pointer]
+            - separator [ref=e51]
+            - generic [ref=e52]:
+              - button "💾 Save New" [ref=e53] [cursor=pointer]
+              - button "⟳ Update" [disabled] [ref=e54] [cursor=pointer]
+              - button "🗑 Delete" [disabled] [ref=e55] [cursor=pointer]
+          - generic [ref=e56]:
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - generic [ref=e60]: Title
+                - textbox "Title" [ref=e61]:
+                  - /placeholder: My Escape Room
+                  - text: My Escape Room
+              - generic [ref=e62]:
+                - generic [ref=e63]: Timer (seconds)
+                - spinbutton "Timer (seconds)" [ref=e64]: "180"
+              - generic [ref=e65]:
+                - generic [ref=e66]: Background image
+                - button "Background image" [ref=e67]
+            - generic [ref=e69]: Upload a background image to preview
+            - generic [ref=e70]:
+              - generic [ref=e71]:
+                - button "+ Question" [ref=e72] [cursor=pointer]
+                - button "+ Format (semicolon)" [ref=e73] [cursor=pointer]
+                - button "+ Click (hotspot)" [ref=e74] [cursor=pointer]
+                - 'button "+ Code: 0→1000" [ref=e75] [cursor=pointer]'
+                - button "+ CSV → JSON" [ref=e76] [cursor=pointer]
+              - paragraph [ref=e77]: No stages yet. Add one above.
+            - generic [ref=e78]:
+              - button "Preview playable HTML" [disabled] [ref=e79] [cursor=pointer]
+              - button "Generate & download HTML" [disabled] [ref=e80] [cursor=pointer]
+    - contentinfo [ref=e81]:
+      - generic [ref=e82]: © 2025 Parikshit Bohara, 21880927, 18/08/2025
+  - alert [ref=e83]
+```
