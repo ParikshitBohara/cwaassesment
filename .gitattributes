@@ -1,0 +1,4 @@
+# Treat QA report exports as generated artifacts so they do not affect language stats
+reports/*.html linguist-generated=true
+reports/*.html linguist-documentation
+reports/*.csv linguist-generated=true
