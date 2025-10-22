@@ -1,0 +1,3 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,Received KB/sec,Sent KB/sec,Avg. Bytes
+GET /api/rooms,100,2144,876,6421,1007.35,0.000%,3.43041,1344.76,0.43,401419.6
+TOTAL,100,2144,876,6421,1007.35,0.000%,3.43041,1344.76,0.43,401419.6
